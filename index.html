@@ -993,7 +993,7 @@ footer {
     <li><a href="#gamification">XP System</a></li>
     <li><a href="#stack">Stack</a></li>
   </ul>
-  <button class="nav-cta">Download Free</button>
+  <button class="nav-cta download-trigger">Download Free</button>
 </nav>
 
 <!-- HERO -->
@@ -1015,9 +1015,8 @@ footer {
     The <strong>offline-first desktop app</strong> that turns your tasks and habits into a system of unstoppable momentum. No cloud. No subscriptions. Just results.
   </p>
 
-  <div class="hero-actions">
     <button class="btn-primary" id="download-btn-main">⬇ Download for Free</button>
-    <button class="btn-ghost">View Features →</button>
+    <a href="#features" class="btn-ghost" style="text-decoration:none; display:inline-flex; align-items:center; justify-content:center;">View Features →</a>
   </div>
 
   <div class="hero-stats">
@@ -1432,7 +1431,6 @@ footer {
     <p>Download FocusForge free. One file. No account. No internet. Just open it and start building the best version of yourself — today.</p>
     <div class="cta-actions">
       <button class="btn-primary" id="download-btn-bottom">⬇ Download FocusForge — Free</button>
-      <button class="btn-ghost">View Source Code →</button>
     </div>
   </div>
 </section>
@@ -1497,15 +1495,14 @@ window.addEventListener('scroll', () => {
 });
 
 // ── DOWNLOAD LOGIC ──
-const downloadButtons = [
-    document.getElementById('download-btn-main'),
-    document.getElementById('download-btn-bottom'),
-    document.querySelector('.nav-cta')
-];
+const downloadTriggers = document.querySelectorAll('.btn-primary, .nav-cta, #download-btn-main, #download-btn-bottom');
 
-downloadButtons.forEach(btn => {
+downloadTriggers.forEach(btn => {
     if (btn) {
         btn.addEventListener('click', (e) => {
+            // If it's the 'View Features' link, don't download
+            if (btn.classList.contains('btn-ghost')) return;
+            
             e.preventDefault();
             window.location.href = './FocusForge.exe';
         });
