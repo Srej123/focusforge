@@ -1499,13 +1499,15 @@ window.addEventListener('scroll', () => {
 // ── DOWNLOAD LOGIC ──
 const downloadButtons = [
     document.getElementById('download-btn-main'),
-    document.getElementById('download-btn-bottom')
+    document.getElementById('download-btn-bottom'),
+    document.querySelector('.nav-cta')
 ];
 
 downloadButtons.forEach(btn => {
     if (btn) {
-        btn.addEventListener('click', () => {
-            alert('Refer to the documentation to set up the direct download link for FocusForge.exe');
+        btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            window.location.href = './FocusForge.exe';
         });
     }
 });
