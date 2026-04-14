@@ -1,0 +1,1514 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>FocusForge — Forge Your Discipline</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --violet: #7C5CFC;
+  --violet-dim: #5a3fd4;
+  --violet-glow: rgba(124,92,252,0.3);
+  --acid: #C8FF00;
+  --fire: #FF5C00;
+  --bg: #080810;
+  --surface: #0f0f1a;
+  --surface2: #141428;
+  --border: rgba(124,92,252,0.2);
+  --text: #e8e8f0;
+  --muted: #6b6b8a;
+  --success: #22C55E;
+  --danger: #EF4444;
+  --warning: #F59E0B;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+/* ── NOISE OVERLAY ── */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.5;
+}
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--violet); border-radius: 2px; }
+
+/* ── NAV ── */
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 60px;
+  background: rgba(8,8,16,0.85);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+}
+
+.nav-logo {
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: 1.4rem;
+  color: #fff;
+  letter-spacing: -0.5px;
+}
+
+.nav-logo span { color: var(--violet); }
+
+.nav-links {
+  display: flex;
+  gap: 36px;
+  list-style: none;
+}
+
+.nav-links a {
+  color: var(--muted);
+  text-decoration: none;
+  font-size: 0.88rem;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  transition: color 0.2s;
+  text-transform: uppercase;
+}
+
+.nav-links a:hover { color: var(--text); }
+
+.nav-cta {
+  background: var(--violet);
+  color: #fff;
+  border: none;
+  padding: 10px 24px;
+  border-radius: 6px;
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  font-size: 0.88rem;
+  cursor: pointer;
+  letter-spacing: 0.5px;
+  transition: background 0.2s, transform 0.15s;
+}
+
+.nav-cta:hover { background: var(--violet-dim); transform: translateY(-1px); }
+
+/* ── HERO ── */
+.hero {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 140px 40px 100px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* animated grid bg */
+.hero-grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(var(--border) 1px, transparent 1px),
+    linear-gradient(90deg, var(--border) 1px, transparent 1px);
+  background-size: 60px 60px;
+  mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 30%, transparent 100%);
+  animation: gridDrift 20s linear infinite;
+}
+
+@keyframes gridDrift {
+  0% { background-position: 0 0; }
+  100% { background-position: 60px 60px; }
+}
+
+/* glow orbs */
+.orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  pointer-events: none;
+}
+
+.orb-1 {
+  width: 500px; height: 500px;
+  background: radial-gradient(circle, rgba(124,92,252,0.25) 0%, transparent 70%);
+  top: -100px; left: -100px;
+  animation: orbFloat 8s ease-in-out infinite;
+}
+
+.orb-2 {
+  width: 400px; height: 400px;
+  background: radial-gradient(circle, rgba(255,92,0,0.15) 0%, transparent 70%);
+  bottom: -50px; right: -50px;
+  animation: orbFloat 10s ease-in-out infinite reverse;
+}
+
+.orb-3 {
+  width: 300px; height: 300px;
+  background: radial-gradient(circle, rgba(200,255,0,0.1) 0%, transparent 70%);
+  top: 40%; left: 60%;
+  animation: orbFloat 12s ease-in-out infinite;
+}
+
+@keyframes orbFloat {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(30px, -30px) scale(1.05); }
+}
+
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(124,92,252,0.1);
+  border: 1px solid var(--border);
+  border-radius: 100px;
+  padding: 6px 16px;
+  font-family: 'Space Mono', monospace;
+  font-size: 0.72rem;
+  color: var(--violet);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-bottom: 32px;
+  animation: fadeUp 0.6s ease both;
+}
+
+.hero-badge::before {
+  content: '';
+  width: 6px; height: 6px;
+  background: var(--acid);
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(0.8); }
+}
+
+.hero h1 {
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: clamp(3.2rem, 8vw, 7rem);
+  line-height: 0.95;
+  letter-spacing: -2px;
+  margin-bottom: 28px;
+  animation: fadeUp 0.6s ease 0.1s both;
+}
+
+.hero h1 .line1 { display: block; color: #fff; }
+.hero h1 .line2 { display: block; color: var(--violet); }
+.hero h1 .line3 {
+  display: block;
+  background: linear-gradient(90deg, var(--acid), var(--fire));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.hero-sub {
+  font-size: 1.15rem;
+  color: var(--muted);
+  max-width: 560px;
+  margin: 0 auto 48px;
+  font-weight: 300;
+  animation: fadeUp 0.6s ease 0.2s both;
+}
+
+.hero-sub strong { color: var(--text); font-weight: 500; }
+
+.hero-actions {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  flex-wrap: wrap;
+  animation: fadeUp 0.6s ease 0.3s both;
+}
+
+.btn-primary {
+  background: var(--violet);
+  color: #fff;
+  border: none;
+  padding: 16px 36px;
+  border-radius: 8px;
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  font-size: 1rem;
+  cursor: pointer;
+  letter-spacing: 0.3px;
+  transition: all 0.2s;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-primary::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.15), transparent);
+  border-radius: inherit;
+}
+
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 12px 40px var(--violet-glow); }
+
+.btn-ghost {
+  background: transparent;
+  color: var(--text);
+  border: 1px solid var(--border);
+  padding: 16px 36px;
+  border-radius: 8px;
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-ghost:hover { border-color: var(--violet); color: var(--violet); }
+
+.hero-stats {
+  display: flex;
+  gap: 48px;
+  justify-content: center;
+  margin-top: 80px;
+  animation: fadeUp 0.6s ease 0.4s both;
+}
+
+.stat {
+  text-align: center;
+}
+
+.stat-num {
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: 2rem;
+  color: #fff;
+  display: block;
+}
+
+.stat-num span { color: var(--violet); }
+.stat-label { font-size: 0.8rem; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
+
+/* ── APP PREVIEW ── */
+.app-preview {
+  padding: 40px 60px 120px;
+  display: flex;
+  justify-content: center;
+  animation: fadeUp 0.8s ease 0.5s both;
+}
+
+.app-window {
+  width: 100%;
+  max-width: 900px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 40px 120px rgba(0,0,0,0.6), 0 0 80px var(--violet-glow);
+}
+
+.window-bar {
+  background: var(--surface2);
+  padding: 14px 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+.dot { width: 12px; height: 12px; border-radius: 50%; }
+.dot-r { background: #FF5F56; }
+.dot-y { background: #FFBD2E; }
+.dot-g { background: #27C93F; }
+
+.window-title {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.75rem;
+  color: var(--muted);
+  margin-left: 8px;
+}
+
+.window-body {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  min-height: 420px;
+}
+
+.mock-sidebar {
+  background: rgba(0,0,0,0.3);
+  border-right: 1px solid var(--border);
+  padding: 20px 0;
+}
+
+.mock-nav-item {
+  padding: 10px 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.82rem;
+  color: var(--muted);
+  cursor: default;
+  transition: all 0.2s;
+}
+
+.mock-nav-item.active {
+  background: rgba(124,92,252,0.15);
+  color: var(--violet);
+  border-left: 2px solid var(--violet);
+}
+
+.mock-icon { font-size: 1rem; }
+
+.mock-main { padding: 28px; }
+
+.mock-greeting {
+  font-family: 'Syne', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 4px;
+}
+
+.mock-quote {
+  font-size: 0.78rem;
+  color: var(--muted);
+  font-style: italic;
+  margin-bottom: 24px;
+}
+
+.mock-score-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.mock-card {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 100px;
+  padding: 14px;
+}
+
+.mock-card-label {
+  font-size: 0.7rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  margin-bottom: 6px;
+}
+
+.mock-card-val {
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: 1.5rem;
+  color: #fff;
+}
+
+.mock-card-val.violet { color: var(--violet); }
+.mock-card-val.acid { color: var(--acid); }
+.mock-card-val.fire { color: var(--fire); }
+
+.mock-progress-bar {
+  height: 4px;
+  background: var(--surface2);
+  border-radius: 2px;
+  margin-top: 8px;
+  overflow: hidden;
+}
+
+.mock-progress-fill {
+  height: 100%;
+  border-radius: 2px;
+  background: var(--violet);
+  width: 72%;
+  animation: fillBar 2s ease both;
+}
+
+@keyframes fillBar {
+  from { width: 0; }
+}
+
+.mock-tasks { display: flex; flex-direction: column; gap: 8px; }
+
+.mock-task {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 0.82rem;
+}
+
+.mock-check {
+  width: 16px; height: 16px;
+  border-radius: 4px;
+  border: 1.5px solid var(--muted);
+  flex-shrink: 0;
+}
+
+.mock-check.done {
+  background: var(--violet);
+  border-color: var(--violet);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 0.65rem;
+}
+
+.mock-task-name { flex: 1; }
+.mock-task-name.done { text-decoration: line-through; color: var(--muted); }
+
+.mock-priority {
+  font-size: 0.65rem;
+  padding: 2px 8px;
+  border-radius: 100px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.mock-priority.high { background: rgba(239,68,68,0.15); color: var(--danger); }
+.mock-priority.med { background: rgba(245,158,11,0.15); color: var(--warning); }
+.mock-priority.low { background: rgba(34,197,94,0.15); color: var(--success); }
+
+/* ── SECTION WRAPPER ── */
+section { padding: 100px 60px; }
+
+.section-tag {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.72rem;
+  color: var(--violet);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 16px;
+}
+
+.section-title {
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: clamp(2rem, 4vw, 3rem);
+  line-height: 1.1;
+  letter-spacing: -1px;
+  color: #fff;
+  margin-bottom: 16px;
+}
+
+.section-sub {
+  color: var(--muted);
+  font-size: 1rem;
+  max-width: 520px;
+  font-weight: 300;
+}
+
+/* ── FEATURES GRID ── */
+.features {
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+
+.features-header { text-align: center; margin-bottom: 64px; }
+.features-header .section-sub { margin: 0 auto; }
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.feature-card {
+  background: var(--surface);
+  padding: 40px 36px;
+  transition: background 0.3s;
+  position: relative;
+  overflow: hidden;
+}
+
+.feature-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--violet), transparent);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.feature-card:hover { background: var(--surface2); }
+.feature-card:hover::before { opacity: 1; }
+
+.feature-icon {
+  font-size: 2rem;
+  margin-bottom: 20px;
+  display: block;
+}
+
+.feature-name {
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  font-size: 1.15rem;
+  color: #fff;
+  margin-bottom: 10px;
+}
+
+.feature-desc {
+  font-size: 0.88rem;
+  color: var(--muted);
+  line-height: 1.7;
+}
+
+.feature-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 16px;
+}
+
+.ftag {
+  font-size: 0.68rem;
+  padding: 3px 10px;
+  border-radius: 100px;
+  background: rgba(124,92,252,0.1);
+  border: 1px solid rgba(124,92,252,0.2);
+  color: var(--violet);
+  font-family: 'Space Mono', monospace;
+  letter-spacing: 0.5px;
+}
+
+/* ── HABIT GRID DEMO ── */
+.habit-demo {
+  display: flex;
+  gap: 80px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.habit-demo-text { flex: 1; min-width: 280px; }
+
+.habit-demo-visual {
+  flex: 1;
+  min-width: 280px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 32px;
+}
+
+.habit-item {
+  margin-bottom: 28px;
+}
+
+.habit-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.habit-name-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.habit-cat {
+  font-size: 0.7rem;
+  padding: 2px 10px;
+  border-radius: 100px;
+  font-weight: 600;
+}
+
+.cat-health { background: rgba(239,68,68,0.1); color: #FF6B6B; }
+.cat-learn  { background: rgba(124,92,252,0.1); color: var(--violet); }
+.cat-mind   { background: rgba(200,255,0,0.1); color: var(--acid); }
+
+.habit-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.95rem; color: #fff; }
+
+.habit-streak {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.78rem;
+  color: var(--fire);
+}
+
+.habit-grid-row {
+  display: flex;
+  gap: 3px;
+  flex-wrap: wrap;
+}
+
+.hcell {
+  width: 16px; height: 16px;
+  border-radius: 3px;
+  background: var(--surface2);
+  transition: background 0.3s;
+}
+
+.hcell.done { background: var(--violet); }
+.hcell.done-2 { background: rgba(124,92,252,0.5); }
+.hcell.missed { background: rgba(239,68,68,0.2); }
+
+/* ── XP SECTION ── */
+.xp-section { background: var(--surface); border-top: 1px solid var(--border); }
+
+.xp-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px;
+  align-items: center;
+}
+
+.xp-visual {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 36px;
+}
+
+.xp-level-display {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.xp-badge {
+  display: inline-block;
+  background: linear-gradient(135deg, var(--violet), #a855f7);
+  border-radius: 50%;
+  width: 80px; height: 80px;
+  line-height: 80px;
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: 1.4rem;
+  color: #fff;
+  margin-bottom: 12px;
+  box-shadow: 0 0 40px var(--violet-glow);
+}
+
+.xp-level-name {
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  color: #fff;
+  font-size: 1.1rem;
+}
+
+.xp-bar-wrap {
+  background: var(--surface2);
+  height: 8px;
+  border-radius: 4px;
+  margin: 12px 0;
+  overflow: hidden;
+}
+
+.xp-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--violet), var(--acid));
+  border-radius: 4px;
+  width: 68%;
+  animation: fillBar 1.5s ease both;
+}
+
+.xp-numbers {
+  display: flex;
+  justify-content: space-between;
+  font-family: 'Space Mono', monospace;
+  font-size: 0.72rem;
+  color: var(--muted);
+}
+
+.xp-actions { display: flex; flex-direction: column; gap: 10px; margin-top: 24px; }
+
+.xp-action-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 0.82rem;
+}
+
+.xp-gain {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.78rem;
+  color: var(--acid);
+  font-weight: 700;
+}
+
+/* ── ACHIEVEMENTS ── */
+.achievements-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 16px;
+  margin-top: 48px;
+}
+
+.ach-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 24px 20px;
+  text-align: center;
+  transition: all 0.3s;
+  position: relative;
+}
+
+.ach-card.locked { opacity: 0.4; filter: grayscale(1); }
+
+.ach-card:not(.locked):hover {
+  border-color: var(--violet);
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px var(--violet-glow);
+}
+
+.ach-icon { font-size: 2.2rem; margin-bottom: 10px; display: block; }
+.ach-name { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.88rem; color: #fff; margin-bottom: 4px; }
+.ach-desc { font-size: 0.72rem; color: var(--muted); }
+
+.ach-unlocked-badge {
+  position: absolute;
+  top: 10px; right: 10px;
+  font-size: 0.6rem;
+  padding: 2px 6px;
+  background: rgba(34,197,94,0.15);
+  color: var(--success);
+  border-radius: 100px;
+  font-family: 'Space Mono', monospace;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* ── TECH STACK ── */
+.stack-section { text-align: center; }
+
+.stack-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: center;
+  margin-top: 48px;
+}
+
+.stack-pill {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 100px;
+  font-family: 'Space Mono', monospace;
+  font-size: 0.8rem;
+  color: var(--text);
+  transition: all 0.2s;
+}
+
+.stack-pill:hover { border-color: var(--violet); color: var(--violet); }
+.stack-pill-dot { width: 8px; height: 8px; border-radius: 50%; }
+
+/* ── PORTABLE SECTION ── */
+.portable {
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+}
+
+.portable-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px;
+  align-items: center;
+}
+
+.portable-cards { display: flex; flex-direction: column; gap: 16px; }
+
+.portable-card {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  padding: 20px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  transition: border-color 0.2s;
+}
+
+.portable-card:hover { border-color: var(--violet); }
+
+.portable-card-icon {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+  width: 44px; height: 44px;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(124,92,252,0.1);
+  border-radius: 10px;
+}
+
+.portable-card-title {
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: #fff;
+  margin-bottom: 4px;
+}
+
+.portable-card-desc { font-size: 0.82rem; color: var(--muted); }
+
+/* ── CTA ── */
+.cta {
+  text-align: center;
+  padding: 140px 60px;
+  position: relative;
+  overflow: hidden;
+}
+
+.cta-glow {
+  position: absolute;
+  width: 600px; height: 600px;
+  background: radial-gradient(circle, rgba(124,92,252,0.2) 0%, transparent 60%);
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.cta h2 {
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: clamp(2.5rem, 5vw, 4.5rem);
+  line-height: 1.05;
+  letter-spacing: -1.5px;
+  color: #fff;
+  margin-bottom: 20px;
+}
+
+.cta h2 em { font-style: normal; color: var(--violet); }
+
+.cta p { color: var(--muted); font-size: 1.05rem; max-width: 480px; margin: 0 auto 48px; }
+
+.cta-actions { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+
+/* ── FOOTER ── */
+footer {
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  padding: 48px 60px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 24px;
+}
+
+.footer-logo {
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: 1.2rem;
+  color: #fff;
+}
+
+.footer-logo span { color: var(--violet); }
+
+.footer-note {
+  font-size: 0.8rem;
+  color: var(--muted);
+  font-family: 'Space Mono', monospace;
+}
+
+.footer-links { display: flex; gap: 24px; }
+.footer-links a { font-size: 0.82rem; color: var(--muted); text-decoration: none; transition: color 0.2s; }
+.footer-links a:hover { color: var(--violet); }
+
+/* ── ANIMATIONS ── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.reveal {
+  opacity: 0;
+  transform: translateY(40px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ── DIVIDER ── */
+.divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--border), transparent);
+  margin: 0 60px;
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 768px) {
+  nav { padding: 16px 24px; }
+  .nav-links { display: none; }
+  section { padding: 80px 24px; }
+  .app-preview { padding: 20px 24px 80px; }
+  .window-body { grid-template-columns: 1fr; }
+  .mock-sidebar { display: none; }
+  .xp-layout, .portable-layout { grid-template-columns: 1fr; }
+  .habit-demo { flex-direction: column; }
+  .hero-stats { gap: 28px; flex-wrap: wrap; }
+  footer { flex-direction: column; text-align: center; }
+  .cta { padding: 80px 24px; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">Focus<span>Forge</span></div>
+  <ul class="nav-links">
+    <li><a href="#features">Features</a></li>
+    <li><a href="#habits">Habits</a></li>
+    <li><a href="#gamification">XP System</a></li>
+    <li><a href="#stack">Stack</a></li>
+  </ul>
+  <button class="nav-cta">Download Free</button>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-grid"></div>
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+
+  <div class="hero-badge">v2.0 — Now with XP & Pomodoro</div>
+
+  <h1>
+    <span class="line1">FORGE YOUR</span>
+    <span class="line2">DISCIPLINE.</span>
+    <span class="line3">DAILY.</span>
+  </h1>
+
+  <p class="hero-sub">
+    The <strong>offline-first desktop app</strong> that turns your tasks and habits into a system of unstoppable momentum. No cloud. No subscriptions. Just results.
+  </p>
+
+  <div class="hero-actions">
+    <button class="btn-primary" id="download-btn-main">⬇ Download for Free</button>
+    <button class="btn-ghost">View Features →</button>
+  </div>
+
+  <div class="hero-stats">
+    <div class="stat">
+      <span class="stat-num">7<span>+</span></span>
+      <span class="stat-label">Core Modules</span>
+    </div>
+    <div class="stat">
+      <span class="stat-num">12<span>+</span></span>
+      <span class="stat-label">Power Features</span>
+    </div>
+    <div class="stat">
+      <span class="stat-num">100<span>%</span></span>
+      <span class="stat-label">Offline & Private</span>
+    </div>
+    <div class="stat">
+      <span class="stat-num">1<span> file</span></span>
+      <span class="stat-label">Portable .exe</span>
+    </div>
+  </div>
+</section>
+
+<!-- APP PREVIEW -->
+<div class="app-preview reveal">
+  <div class="app-window">
+    <div class="window-bar">
+      <div class="dot dot-r"></div>
+      <div class="dot dot-y"></div>
+      <div class="dot dot-g"></div>
+      <span class="window-title">FocusForge — Dashboard</span>
+    </div>
+    <div class="window-body">
+      <div class="mock-sidebar">
+        <div class="mock-nav-item active"><span class="mock-icon">⚡</span> Dashboard</div>
+        <div class="mock-nav-item"><span class="mock-icon">✅</span> Tasks</div>
+        <div class="mock-nav-item"><span class="mock-icon">🔥</span> Habits</div>
+        <div class="mock-nav-item"><span class="mock-icon">📅</span> Calendar</div>
+        <div class="mock-nav-item"><span class="mock-icon">📊</span> Reports</div>
+        <div class="mock-nav-item"><span class="mock-icon">📓</span> Journal</div>
+        <div class="mock-nav-item"><span class="mock-icon">⚙️</span> Settings</div>
+      </div>
+      <div class="mock-main">
+        <div class="mock-greeting">Good morning, Warrior. 👋</div>
+        <div class="mock-quote">"Discipline is choosing between what you want now and what you want most."</div>
+        <div class="mock-score-row">
+          <div class="mock-card">
+            <div class="mock-card-label">Daily Score</div>
+            <div class="mock-card-val violet">72%</div>
+            <div class="mock-progress-bar"><div class="mock-progress-fill"></div></div>
+          </div>
+          <div class="mock-card">
+            <div class="mock-card-label">Fire Streak</div>
+            <div class="mock-card-val fire">🔥 12</div>
+          </div>
+          <div class="mock-card">
+            <div class="mock-card-label">XP Today</div>
+            <div class="mock-card-val acid">+185</div>
+          </div>
+        </div>
+        <div class="mock-tasks">
+          <div class="mock-task">
+            <div class="mock-check done">✓</div>
+            <span class="mock-task-name done">Review project proposal</span>
+            <span class="mock-priority low">Low</span>
+          </div>
+          <div class="mock-task">
+            <div class="mock-check done">✓</div>
+            <span class="mock-task-name done">Morning workout</span>
+            <span class="mock-priority med">Med</span>
+          </div>
+          <div class="mock-task">
+            <div class="mock-check"></div>
+            <span class="mock-task-name">Finish FocusForge report</span>
+            <span class="mock-priority high">High</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FEATURES -->
+<section id="features" class="features">
+  <div class="features-header reveal">
+    <div class="section-tag">// What's Inside</div>
+    <h2 class="section-title">Everything you need.<br>Nothing you don't.</h2>
+    <p class="section-sub">8 fully-built modules working together to make you unstoppable — all running locally on your machine.</p>
+  </div>
+
+  <div class="features-grid reveal">
+    <div class="feature-card">
+      <span class="feature-icon">⚡</span>
+      <div class="feature-name">Personal Dashboard</div>
+      <p class="feature-desc">Your morning command center. Daily score, greeting, motivational quotes, and a fast snapshot of what matters today.</p>
+      <div class="feature-tags">
+        <span class="ftag">Daily Score</span>
+        <span class="ftag">Streaks</span>
+        <span class="ftag">Quick Add</span>
+      </div>
+    </div>
+    <div class="feature-card">
+      <span class="feature-icon">✅</span>
+      <div class="feature-name">Task Manager</div>
+      <p class="feature-desc">Create tasks with priorities, subtasks, tags, and recurring schedules. Filter, search, and drag to reorder. Your work, organized.</p>
+      <div class="feature-tags">
+        <span class="ftag">Subtasks</span>
+        <span class="ftag">Recurring</span>
+        <span class="ftag">Tags</span>
+      </div>
+    </div>
+    <div class="feature-card">
+      <span class="feature-icon">🔥</span>
+      <div class="feature-name">Habit Tracker</div>
+      <p class="feature-desc">30-day consistency grid, automatic streak counting, missed-day tracking, and habit categories. Build discipline visually.</p>
+      <div class="feature-tags">
+        <span class="ftag">30-day Grid</span>
+        <span class="ftag">Categories</span>
+        <span class="ftag">Streaks</span>
+      </div>
+    </div>
+    <div class="feature-card">
+      <span class="feature-icon">🍅</span>
+      <div class="feature-name">Pomodoro Timer</div>
+      <p class="feature-desc">Built directly into each task. 25/5 classic mode or fully customizable sessions. Circular countdown with session logging.</p>
+      <div class="feature-tags">
+        <span class="ftag">Focus Sessions</span>
+        <span class="ftag">Custom Time</span>
+        <span class="ftag">+25 XP</span>
+      </div>
+    </div>
+    <div class="feature-card">
+      <span class="feature-icon">🎯</span>
+      <div class="feature-name">Focus Mode</div>
+      <p class="feature-desc">One click. Full screen. Zero distractions. Just the task title, your timer, and your notes. Everything else disappears.</p>
+      <div class="feature-tags">
+        <span class="ftag">Fullscreen</span>
+        <span class="ftag">Deep Work</span>
+        <span class="ftag">ESC to exit</span>
+      </div>
+    </div>
+    <div class="feature-card">
+      <span class="feature-icon">📊</span>
+      <div class="feature-name">Analytics & Reports</div>
+      <p class="feature-desc">7-day bar charts, habit streak graphs, weekly reviews, and auto-generated insights. See your improvement in numbers.</p>
+      <div class="feature-tags">
+        <span class="ftag">Charts</span>
+        <span class="ftag">Insights</span>
+        <span class="ftag">Weekly Review</span>
+      </div>
+    </div>
+    <div class="feature-card">
+      <span class="feature-icon">📓</span>
+      <div class="feature-name">Daily Journal</div>
+      <p class="feature-desc">Markdown-supported reflection space with full history. Link notes to tasks or habits. Earn XP for writing.</p>
+      <div class="feature-tags">
+        <span class="ftag">Markdown</span>
+        <span class="ftag">History</span>
+        <span class="ftag">+5 XP</span>
+      </div>
+    </div>
+    <div class="feature-card">
+      <span class="feature-icon">😊</span>
+      <div class="feature-name">Mood Tracker</div>
+      <p class="feature-desc">Daily 5-emoji mood check-in with history graph. Discover correlations between your mood and your habit completion rate.</p>
+      <div class="feature-tags">
+        <span class="ftag">Emoji Scale</span>
+        <span class="ftag">Mood Graph</span>
+        <span class="ftag">Correlations</span>
+      </div>
+    </div>
+    <div class="feature-card">
+      <span class="feature-icon">📅</span>
+      <div class="feature-name">Monthly Calendar</div>
+      <p class="feature-desc">See tasks and habits together in a color-coded monthly grid. Click any date for full detail. Overdue items glow red.</p>
+      <div class="feature-tags">
+        <span class="ftag">Color-coded</span>
+        <span class="ftag">Overdue Alerts</span>
+        <span class="ftag">Full Detail</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HABIT DEMO -->
+<section id="habits">
+  <div class="habit-demo">
+    <div class="habit-demo-text reveal">
+      <div class="section-tag">// Habit Engine</div>
+      <h2 class="section-title">Your 30-day<br>consistency grid.</h2>
+      <p class="section-sub">See exactly which days you showed up. GitHub-style grids per habit. Your streak auto-resets if you miss — which means every green square is earned.</p>
+      <br/>
+      <p class="section-sub">Filter by category — Health, Learning, Finance, Mindset — and watch your discipline compound day by day.</p>
+    </div>
+    <div class="habit-demo-visual reveal">
+      <div class="habit-item">
+        <div class="habit-header">
+          <div class="habit-name-row">
+            <span class="habit-cat cat-health">💪 Health</span>
+            <span class="habit-title">Morning Exercise</span>
+          </div>
+          <span class="habit-streak">🔥 12 days</span>
+        </div>
+        <div class="habit-grid-row" id="grid1"></div>
+      </div>
+      <div class="habit-item">
+        <div class="habit-header">
+          <div class="habit-name-row">
+            <span class="habit-cat cat-learn">📚 Learning</span>
+            <span class="habit-title">Read 20 Pages</span>
+          </div>
+          <span class="habit-streak">🔥 7 days</span>
+        </div>
+        <div class="habit-grid-row" id="grid2"></div>
+      </div>
+      <div class="habit-item" style="margin-bottom:0">
+        <div class="habit-header">
+          <div class="habit-name-row">
+            <span class="habit-cat cat-mind">🧘 Mindset</span>
+            <span class="habit-title">Meditation</span>
+          </div>
+          <span class="habit-streak">🔥 4 days</span>
+        </div>
+        <div class="habit-grid-row" id="grid3"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- XP GAMIFICATION -->
+<section id="gamification" class="xp-section">
+  <div class="xp-layout">
+    <div class="reveal">
+      <div class="section-tag">// XP System</div>
+      <h2 class="section-title">Every action<br>earns you power.</h2>
+      <p class="section-sub">Complete tasks, track habits, write journal entries, finish Pomodoros — every action gives you XP and levels you up. Discipline becomes a game you actually win.</p>
+      <br/>
+      <ul style="list-style:none; display:flex; flex-direction:column; gap:10px; margin-top:8px;">
+        <li style="display:flex; align-items:center; gap:12px; font-size:0.9rem; color:var(--muted)">
+          <span style="color:var(--acid); font-family:'Space Mono',monospace; font-size:0.8rem; width:48px">+35 XP</span>
+          Complete a High Priority Task
+        </li>
+        <li style="display:flex; align-items:center; gap:12px; font-size:0.9rem; color:var(--muted)">
+          <span style="color:var(--acid); font-family:'Space Mono',monospace; font-size:0.8rem; width:48px">+100 XP</span>
+          7-Day Habit Streak Bonus
+        </li>
+        <li style="display:flex; align-items:center; gap:12px; font-size:0.9rem; color:var(--muted)">
+          <span style="color:var(--acid); font-family:'Space Mono',monospace; font-size:0.8rem; width:48px">+25 XP</span>
+          Full Pomodoro Session
+        </li>
+        <li style="display:flex; align-items:center; gap:12px; font-size:0.9rem; color:var(--muted)">
+          <span style="color:var(--acid); font-family:'Space Mono',monospace; font-size:0.8rem; width:48px">+5 XP</span>
+          Write a Journal Entry
+        </li>
+      </ul>
+    </div>
+    <div class="xp-visual reveal">
+      <div class="xp-level-display">
+        <div class="xp-badge">L3</div>
+        <div class="xp-level-name">Discipline Engine</div>
+      </div>
+      <div class="xp-bar-wrap">
+        <div class="xp-bar-fill"></div>
+      </div>
+      <div class="xp-numbers">
+        <span>680 XP</span>
+        <span>1000 XP → Level 4</span>
+      </div>
+      <div class="xp-actions">
+        <div class="xp-action-row">
+          <span>✅ Finished report task</span>
+          <span class="xp-gain">+35 XP</span>
+        </div>
+        <div class="xp-action-row">
+          <span>🔥 7-day Exercise streak</span>
+          <span class="xp-gain">+100 XP</span>
+        </div>
+        <div class="xp-action-row">
+          <span>🍅 Pomodoro completed</span>
+          <span class="xp-gain">+25 XP</span>
+        </div>
+        <div class="xp-action-row">
+          <span>📓 Journal entry saved</span>
+          <span class="xp-gain">+5 XP</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ACHIEVEMENTS -->
+<section>
+  <div class="reveal" style="text-align:center; margin-bottom:8px;">
+    <div class="section-tag" style="text-align:center">// Achievements</div>
+    <h2 class="section-title" style="text-align:center">Badges that mean something.</h2>
+    <p class="section-sub" style="margin:0 auto; text-align:center">Unlock real achievements by building real habits. No fake rewards — every badge is earned through action.</p>
+  </div>
+  <div class="achievements-grid reveal">
+    <div class="ach-card">
+      <span class="ach-unlocked-badge">Unlocked</span>
+      <span class="ach-icon">🏆</span>
+      <div class="ach-name">First Forge</div>
+      <div class="ach-desc">Complete your first task</div>
+    </div>
+    <div class="ach-card">
+      <span class="ach-unlocked-badge">Unlocked</span>
+      <span class="ach-icon">🔥</span>
+      <div class="ach-name">7-Day Warrior</div>
+      <div class="ach-desc">7-day habit streak</div>
+    </div>
+    <div class="ach-card">
+      <span class="ach-unlocked-badge">Unlocked</span>
+      <span class="ach-icon">🎯</span>
+      <div class="ach-name">Perfect Day</div>
+      <div class="ach-desc">100% daily score</div>
+    </div>
+    <div class="ach-card">
+      <span class="ach-unlocked-badge">Unlocked</span>
+      <span class="ach-icon">🌅</span>
+      <div class="ach-name">Early Bird</div>
+      <div class="ach-desc">Complete a task before 7 AM</div>
+    </div>
+    <div class="ach-card locked">
+      <span class="ach-icon">💯</span>
+      <div class="ach-name">Century Crusher</div>
+      <div class="ach-desc">Complete 100 tasks total</div>
+    </div>
+    <div class="ach-card locked">
+      <span class="ach-icon">🍅</span>
+      <div class="ach-name">Pomodoro Pro</div>
+      <div class="ach-desc">Log 50 Pomodoro sessions</div>
+    </div>
+    <div class="ach-card locked">
+      <span class="ach-icon">📅</span>
+      <div class="ach-name">Monthly Master</div>
+      <div class="ach-desc">30-day habit streak</div>
+    </div>
+    <div class="ach-card locked">
+      <span class="ach-icon">🧠</span>
+      <div class="ach-name">Deep Thinker</div>
+      <div class="ach-desc">Write 10 journal entries</div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- TECH STACK -->
+<section id="stack" class="stack-section">
+  <div class="reveal">
+    <div class="section-tag">// Built With</div>
+    <h2 class="section-title">Free tools.<br>Zero dependencies.</h2>
+    <p class="section-sub" style="margin:0 auto">Built entirely with free, open-source tools. No subscriptions, no accounts, no internet. Just download and run.</p>
+  </div>
+  <div class="stack-row reveal">
+    <div class="stack-pill"><div class="stack-pill-dot" style="background:#47848f"></div>Electron</div>
+    <div class="stack-pill"><div class="stack-pill-dot" style="background:#f7df1e"></div>JavaScript</div>
+    <div class="stack-pill"><div class="stack-pill-dot" style="background:#e34c26"></div>HTML5</div>
+    <div class="stack-pill"><div class="stack-pill-dot" style="background:#264de4"></div>CSS3</div>
+    <div class="stack-pill"><div class="stack-pill-dot" style="background:#689640"></div>Node.js</div>
+    <div class="stack-pill"><div class="stack-pill-dot" style="background:#0073b7"></div>SQLite</div>
+    <div class="stack-pill"><div class="stack-pill-dot" style="background:#ff6384"></div>Chart.js</div>
+    <div class="stack-pill"><div class="stack-pill-dot" style="background:#888"></div>Lucide Icons</div>
+  </div>
+</section>
+
+<!-- PORTABLE -->
+<section class="portable">
+  <div class="portable-layout">
+    <div class="reveal">
+      <div class="section-tag">// Portable & Private</div>
+      <h2 class="section-title">One file.<br>Everywhere you go.</h2>
+      <p class="section-sub">Drop it on a USB drive. Put it on your desktop. Email it to yourself. FocusForge is a single .exe — no installer, no setup, just double-click and go.</p>
+    </div>
+    <div class="portable-cards reveal">
+      <div class="portable-card">
+        <div class="portable-card-icon">📦</div>
+        <div>
+          <div class="portable-card-title">Single .exe File</div>
+          <div class="portable-card-desc">Everything — UI, logic, database — lives inside one portable executable. No installation required.</div>
+        </div>
+      </div>
+      <div class="portable-card">
+        <div class="portable-card-icon">🔒</div>
+        <div>
+          <div class="portable-card-title">100% Offline & Private</div>
+          <div class="portable-card-desc">No internet. No cloud. No account. Your data never leaves your machine — ever.</div>
+        </div>
+      </div>
+      <div class="portable-card">
+        <div class="portable-card-icon">💾</div>
+        <div>
+          <div class="portable-card-title">Local SQLite Database</div>
+          <div class="portable-card-desc">All your tasks, habits, journal entries, and XP are stored in a local SQLite file you fully own.</div>
+        </div>
+      </div>
+      <div class="portable-card">
+        <div class="portable-card-icon">📤</div>
+        <div>
+          <div class="portable-card-title">Export Your Data</div>
+          <div class="portable-card-desc">Export tasks, habits, and journal to CSV or PDF at any time. Your data, your format, your control.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta">
+  <div class="cta-glow"></div>
+  <div class="reveal">
+    <h2>Stop planning.<br><em>Start forging.</em></h2>
+    <p>Download FocusForge free. One file. No account. No internet. Just open it and start building the best version of yourself — today.</p>
+    <div class="cta-actions">
+      <button class="btn-primary" id="download-btn-bottom">⬇ Download FocusForge — Free</button>
+      <button class="btn-ghost">View Source Code →</button>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">Focus<span>Forge</span></div>
+  <span class="footer-note">// offline · private · portable · free</span>
+  <div class="footer-links">
+    <a href="#">GitHub</a>
+    <a href="#">Changelog</a>
+    <a href="#">Roadmap</a>
+  </div>
+</footer>
+
+<script>
+// ── HABIT GRIDS ──
+function buildGrid(id, pattern) {
+  const el = document.getElementById(id);
+  pattern.forEach(state => {
+    const cell = document.createElement('div');
+    cell.className = 'hcell ' + state;
+    el.appendChild(cell);
+  });
+}
+
+function randGrid(streak) {
+  const days = 30;
+  const grid = [];
+  for (let i = 0; i < days; i++) {
+    if (i >= days - streak) {
+      grid.push('done');
+    } else {
+      const r = Math.random();
+      grid.push(r > 0.35 ? (r > 0.7 ? 'done' : 'done-2') : (r > 0.15 ? '' : 'missed'));
+    }
+  }
+  return grid;
+}
+
+buildGrid('grid1', randGrid(12));
+buildGrid('grid2', randGrid(7));
+buildGrid('grid3', randGrid(4));
+
+// ── SCROLL REVEAL ──
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.classList.add('visible');
+    }
+  });
+}, { threshold: 0.1 });
+
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+// ── NAV SCROLL EFFECT ──
+const nav = document.querySelector('nav');
+window.addEventListener('scroll', () => {
+  nav.style.borderBottomColor = window.scrollY > 50
+    ? 'rgba(124,92,252,0.3)'
+    : 'rgba(124,92,252,0.2)';
+});
+
+// ── DOWNLOAD LOGIC ──
+const downloadButtons = [
+    document.getElementById('download-btn-main'),
+    document.getElementById('download-btn-bottom')
+];
+
+downloadButtons.forEach(btn => {
+    if (btn) {
+        btn.addEventListener('click', () => {
+            alert('Refer to the documentation to set up the direct download link for FocusForge.exe');
+        });
+    }
+});
+</script>
+</body>
+</html>
