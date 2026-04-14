@@ -1016,7 +1016,7 @@ footer {
   </p>
 
     <button class="btn-primary" id="download-btn-main">⬇ Download for Free</button>
-    <a href="#features" class="btn-ghost" style="text-decoration:none; display:inline-flex; align-items:center; justify-content:center;">View Features →</a>
+    <a href="#features" id="view-features-btn" class="btn-ghost" style="text-decoration:none; display:inline-flex; align-items:center; justify-content:center;">View Features →</a>
   </div>
 
   <div class="hero-stats">
@@ -1493,6 +1493,18 @@ window.addEventListener('scroll', () => {
     ? 'rgba(124,92,252,0.3)'
     : 'rgba(124,92,252,0.2)';
 });
+
+// ── SCROLL TO FEATURES LOGIC ──
+const viewFeaturesBtn = document.getElementById('view-features-btn');
+if (viewFeaturesBtn) {
+    viewFeaturesBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        const featuresSection = document.getElementById('features');
+        if (featuresSection) {
+            featuresSection.scrollIntoView({ behavior: 'smooth' });
+        }
+    });
+}
 
 // ── DOWNLOAD LOGIC ──
 const downloadTriggers = document.querySelectorAll('.btn-primary, .nav-cta, #download-btn-main, #download-btn-bottom');
