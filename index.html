@@ -36,7 +36,8 @@ body {
   overflow-x: hidden;
 }
 
-/* ── NOISE OVERLAY ── */
+/* ── SECTION OFFSETS for Fixed Nav ── */
+section { scroll-margin-top: 100px; }
 body::before {
   content: '';
   position: fixed;
@@ -1494,17 +1495,19 @@ window.addEventListener('scroll', () => {
     : 'rgba(124,92,252,0.2)';
 });
 
-// ── SCROLL TO FEATURES LOGIC ──
-const viewFeaturesBtn = document.getElementById('view-features-btn');
-if (viewFeaturesBtn) {
-    viewFeaturesBtn.addEventListener('click', (e) => {
+// ── ROBUST SMOOTH SCROLL FOR ALL LINKS ──
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
         e.preventDefault();
-        const featuresSection = document.getElementById('features');
-        if (featuresSection) {
-            featuresSection.scrollIntoView({ behavior: 'smooth' });
+        const targetId = this.getAttribute('href');
+        const targetElement = document.querySelector(targetId);
+        if (targetElement) {
+            targetElement.scrollIntoView({
+                behavior: 'smooth'
+            });
         }
     });
-}
+});
 
 // ── DOWNLOAD LOGIC ──
 const downloadTriggers = document.querySelectorAll('.btn-primary, .nav-cta, #download-btn-main, #download-btn-bottom');
